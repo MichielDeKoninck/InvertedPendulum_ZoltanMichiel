@@ -23,7 +23,7 @@ K = lqr(system,Q,R);
 %ctrb
 Con = ctrb(system);
 RankConrollability=rank(Con) 
-con
+Con
 %observability
 Ob = obsv(system);
 RankObservability=rank(Ob)%rank 4 => not full rank => not observable
