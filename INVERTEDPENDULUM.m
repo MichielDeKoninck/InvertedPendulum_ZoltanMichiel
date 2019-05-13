@@ -16,7 +16,12 @@ B = [0; 0; Km*Kg/(Mc*Rm*r); -Km*Kg/(r*Rm*Mc*l)];
 C = eye(4,4);
 D = zeros(4,1);
 system_open = ss(A,B,C,D);
-Q = [0.25 0 0 0; 0 4 0 0; 0 0 0 0; 0 0 0 0]; %hier mee spelen?
+Q= zeros(4,4); %We play with this
+Q(1,1)= 0.25;
+Q(2,2)= 4;
+Q(3,3)= 0;
+Q(4,4)= 0;
+Q = [0.25 0 0 0; 0 4 0 0; 0 0 0 0; 0 0 0 0]; 
 R = 0.03;
 K = lqr(system_open,Q,R);
 
