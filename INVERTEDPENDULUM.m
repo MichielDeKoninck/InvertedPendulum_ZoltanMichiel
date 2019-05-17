@@ -1,4 +1,4 @@
-clear;
+%clear;
 
 
 %% CONSTANTEN
@@ -83,6 +83,10 @@ R_alternative = 0.003; %Als R te klein is (0.0003), wordt het systeem instabiel 
 K_alternative = lqr(system_open,Q_alternative,R_alternative);
 
 
+%% Making plots
+
+figure();
+plot(Datatest);
 
 
 
