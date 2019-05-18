@@ -16,7 +16,9 @@ g= 9.81;
 A = [0 0 1 0; 0 0 0 1; 0 -m*g/Mc -Kg^2*Km*Kb/(Mc*Rm*r^2) 0; 0 (Mc+m)*g/(Mc*l) Kg^2*Km*Kb/(Mc*Rm*r^2*l) 0];
 B = [0; 0; Km*Kg/(Mc*Rm*r); -Km*Kg/(r*Rm*Mc*l)];
 C = eye(4,4);
-D = zeros(4,1);
+D = zeros(4,1); %In principe is y maar 2 rijen maar bon kan op zich geen kwaad om de output wat langer te hebben
+%C = eye(2,4);
+%D = zeros(2,1);
 system_open = ss(A,B,C,D);
 Q= zeros(4,4); %We play with this
 Q(1,1)= 0.25;
@@ -29,7 +31,7 @@ K = lqr(system_open,Q,R);
 
 figure();
 pzmap(system_open); %1 positieve reeel pool: dit systeem is niet stabiel
-
+title("Pool=zero map for open-loop system");
 
 %ctrb
 Con = ctrb(system_open);
