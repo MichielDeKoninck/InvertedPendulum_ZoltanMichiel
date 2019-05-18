@@ -1,4 +1,4 @@
-%clear;
+clear;
 
 
 %% CONSTANTEN
@@ -27,6 +27,10 @@ Q = [0.25 0 0 0; 0 4 0 0; 0 0 0 0; 0 0 0 0];
 R = 0.03;
 K = lqr(system_open,Q,R);
 
+figure();
+pzmap(system_open); %1 positieve reeel pool: dit systeem is niet stabiel
+
+
 %ctrb
 Con = ctrb(system_open);
 RankControllability=rank(Con) 
@@ -44,7 +48,7 @@ eigenvalues_closed = eig (A-B*K);
 
 A_closed=A-B*K
 intial_State= [0;0;0;0];
-reference_State = [0.2;0;0;0];
+reference_State = [0;0;0;0];
 system_Closed_First = ss(A_closed,B,C,D); %aanpassen van A en B
 %pzmap(system_Closed_First);
 %impulse(system_Closed_First);
@@ -63,7 +67,7 @@ Ts = 1/200;
 %Determine cut-off frequency: the higher this value, the more noise is
 %allowed to play. If it is chose too low (0.02*2*pi; we are deleting are
 %own useful signal)
-Omega_c = 20*2*pi; 
+Omega_c = 25*2*pi; %12 en 20 zijn de revue gepasseerd
 
 % TODO: find a way to talk about noise. 
 
@@ -83,15 +87,53 @@ R_alternative = 0.003; %Als R te klein is (0.0003), wordt het systeem instabiel 
 K_alternative = lqr(system_open,Q_alternative,R_alternative);
 
 
-%% Making plots
+%% Deel 4: Actual system
 
+%WERKT CAVA altijd
+% Q_realsetup= zeros(4,4); %We play with this
+% Q_realsetup(1,1)= 10;
+% Q_realsetup(2,2)= 2;
+% Q_realsetup(3,3)= 0.01;
+% Q_realsetup(4,4)= 0.5;
+% R_realsetup = 0.15; 
+% K_realsetup = lqr(system_open,Q_realsetup,R_realsetup);
+
+%Werkt degelijk
+% Q_realsetup= zeros(4,4); %We play with this
+% Q_realsetup(1,1)=20; 
+% Q_realsetup(2,2)= 5;
+% Q_realsetup(3,3)= 0.01;
+% Q_realsetup(4,4)= 0.5;
+% R_realsetup = 0.4; 
+% K_realsetup = lqr(system_open,Q_realsetup,R_realsetup);
+% display(K_realsetup)
+
+
+
+% Q_realsetup= zeros(4,4); %We play with this
+% Q_realsetup(1,1)=20; 
+% Q_realsetup(2,2)= 5;
+% Q_realsetup(3,3)= 0.01;
+% Q_realsetup(4,4)= 0.5;
+% R_realsetup = 0.4; 
+% K_realsetup = lqr(system_open,Q_realsetup,R_realsetup);
+% display(K_realsetup)
+%K_realsetup = [-10.54 -35.29 -13.85 -6.25];
+
+Q_realsetup= zeros(4,4); %We play with this
+Q_realsetup(1,1)= 6;
+Q_realsetup(2,2)=2.5;
+Q_realsetup(3,3)= 0.03;
+Q_realsetup(4,4)= 0.25;
+R_realsetup = 0.04; 
+K_realsetup = lqr(system_open,Q_realsetup,R_realsetup);
+display(K_realsetup)
+
+A_realsetup=A-B*K_realsetup
+system_realsetup = ss(A_realsetup,B,C,D); %aanpassen van A en B
 figure();
-plot(Datatest);
 
-
-
-
-
+pzmap(system_realsetup); %in het linker halfvlak dus eigenlijk stabiel
 
 
 
