@@ -1,5 +1,5 @@
 clear;
-
+close all;
 
 %% CONSTANTEN
 Rm = 2.6;
@@ -15,11 +15,38 @@ g= 9.81;
 %% STATE model 
 A = [0 0 1 0; 0 0 0 1; 0 -m*g/Mc -Kg^2*Km*Kb/(Mc*Rm*r^2) 0; 0 (Mc+m)*g/(Mc*l) Kg^2*Km*Kb/(Mc*Rm*r^2*l) 0];
 B = [0; 0; Km*Kg/(Mc*Rm*r); -Km*Kg/(r*Rm*Mc*l)];
-C = eye(4,4);
-D = zeros(4,1); %In principe is y maar 2 rijen maar bon kan op zich geen kwaad om de output wat langer te hebben
+C = eye(4,4); %In fact y is only two values, but this allows easy access to all states for our first design.
+D = zeros(4,1); 
 %C = eye(2,4);
 %D = zeros(2,1);
 system_open = ss(A,B,C,D);
+
+figure();
+pzmap(system_open); %Not all poles are in LHP: not stable
+title("Pool=zero map for open-loop system");
+
+figure();
+impulse(system_open);
+title("Impulse response for open-loop system");
+
+figure();
+step(system_open);
+title("Step response for open-loop system");
+
+%Controlability
+Con = ctrb(system_open);
+RankControllability=rank(Con) 
+Con
+%Observability
+Ob = obsv(system_open);
+RankObservability=rank(Ob)%rank 4 => not full rank => not observable
+Ob
+%Stability
+eigenvalues = eig(A) %unstable: 0 6.0049 -5.0774 -17.8110
+
+%% Deel 2: Closed-loop with LQR control.
+
+
 Q= zeros(4,4); %We play with this
 Q(1,1)= 0.25;
 Q(2,2)= 4;
@@ -27,33 +54,28 @@ Q(3,3)= 0;
 Q(4,4)= 0;
 Q = [0.25 0 0 0; 0 4 0 0; 0 0 0 0; 0 0 0 0]; 
 R = 0.03;
+%R=0.003;
 K = lqr(system_open,Q,R);
-
-figure();
-pzmap(system_open); %1 positieve reeel pool: dit systeem is niet stabiel
-title("Pool=zero map for open-loop system");
-
-%ctrb
-Con = ctrb(system_open);
-RankControllability=rank(Con) 
-Con
-%observability
-Ob = obsv(system_open);
-RankObservability=rank(Ob)%rank 4 => not full rank => not observable
-Ob
-%stable
-eigenvalues = eig(A) %unstable: 0 6.0049 -5.0774 -17.8110
-eigenvalues_closed = eig (A-B*K);
-%stabilizability
-
-%% Deel 2: Closed-loop with LQR control.
 
 A_closed=A-B*K
 intial_State= [0;0;0;0];
-reference_State = [0;0;0;0];
+reference_State = [0.2;0;0;0];
 system_Closed_First = ss(A_closed,B,C,D); %aanpassen van A en B
-%pzmap(system_Closed_First);
-%impulse(system_Closed_First);
+
+figure();
+pzmap(system_Closed_First); 
+title("Pool=zero map for first closed-loop system");
+
+figure();
+impulse(system_Closed_First);
+title("Impulse response for first closed-loop system");
+
+figure();
+step(system_Closed_First);
+title("Step response for first closed-loop system");
+
+eigenvalues_closed = eig (A-B*K);
+
 
 %% Deel 3: Closed-loop more realistic simulation
 
